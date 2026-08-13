@@ -14,19 +14,19 @@ short, and push anything worth revisiting to your bookmark manager** via Miniflu
 
 ```
  Netiflux  ·  Unread  ·  16 unread  ·  12 starred
-┌ Feeds ────────────┬ Unread (16) ───────────────┬ How to read a paper ─────────────┐
-│ VIEWS             │ ●  How to read a paper  2h │ # How to read a paper            │
-│ ▸ Unread       16 │ ●  A note on latency    4h │ *Hacker News · S. Keshav · 5 min*│
-│   Today           │ ○  Older thing          1d │ ─────────────────────────────    │
-│   Starred      12 │ ⤓  Saved earlier        2d │ Researchers spend a great deal…  │
-│   All             │ ★  Starred piece        3d │                                  │
-│ FEEDS             │                            │ ## The three-pass approach       │
-│ ▸ Reason.com    6 │                            │                                  │
-│   Freddie deBoer 1│                            │ The first pass gives you a…      │
-│   Anna's Blog   ! │                            │                                  │
+┌ Feeds ────────────┬ Unread (16) ───────────────┬ Designing for the terminal ──────┐
+│ VIEWS             │ ●  Designing for the…   2h │ # Designing for the terminal     │
+│ ▸ Unread       16 │ ●  A note on latency    4h │ *Engineering Blog · 5 min*       │
+│   Today           │ ○  Something older      1d │ ─────────────────────────        │
+│   Starred      12 │ ⤓  Saved earlier        2d │ Most terminal tools are built    │
+│   All             │ ★  Starred piece        3d │ for one task at a time.          │
+│ FEEDS             │                            │                                  │
+│ ▸ Engineering   6 │                            │ ## Reading in place              │
+│   Weekly Notes  1 │                            │                                  │
+│   Broken Feed   ! │                            │ The reader follows your cursor,  │
 │   show 335 more…  │                            │                                  │
 └───────────────────┴────────────────────────────┴──────────────────────────────────┘
-  j/k move · ⏎ open · m read · f star · s save · v browser · / search · ? help
+  j/k move · ⏎ open · m read · f star · s save · / search · ? help · q quit
 ```
 
 ## Install
