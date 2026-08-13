@@ -14,8 +14,9 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: deps
-    labels:
-      - dependencies
+    # No explicit `labels:` — Dependabot warned that the labels named here did not exist
+    # in the repository, and it applies its own default labels anyway. Add a `labels:`
+    # block back only after creating those labels, or the warning returns.
     groups:
       terminal-gui:
         patterns:
@@ -34,7 +35,9 @@ updates:
           - Microsoft.NET.Test.Sdk
           - coverlet*
 
-  # Workflow actions, so the release pipeline does not rot.
+  # Workflow actions, so the release pipeline does not rot. Actions are pinned to commit
+  # SHAs rather than tags; Dependabot understands that form and bumps both the SHA and
+  # the trailing version comment.
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -44,9 +47,6 @@ updates:
       timezone: America/New_York
     commit-message:
       prefix: ci
-    labels:
-      - dependencies
-      - github-actions
     groups:
       actions:
         patterns:
