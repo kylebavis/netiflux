@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Netiflux.Core/Netiflux.Core.csproj" />
+    <Project Path="src/Netiflux/Netiflux.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Netiflux.Core.Tests/Netiflux.Core.Tests.csproj" />
+    <Project Path="tests/Netiflux.Ui.Tests/Netiflux.Ui.Tests.csproj" />
+  </Folder>
+</Solution>

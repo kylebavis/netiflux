@@ -1,0 +1,227 @@
+name: Release
+
+# Publishing is driven entirely by semver tags: push v1.2.3 and this builds, verifies and
+# publishes that version. Pre-release tags (v1.2.3-beta.1, -rc.2, …) are marked as
+# pre-releases on GitHub rather than becoming "Latest".
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build, without the leading v (e.g. 1.2.3). Produces artifacts only, no GitHub release.'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  version:
+    name: Resolve version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.resolve.outputs.version }}
+      prerelease: ${{ steps.resolve.outputs.prerelease }}
+    steps:
+      - id: resolve
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ inputs.version }}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+
+          # Reject anything that is not semver, so a typo'd tag fails here rather than
+          # producing a release named something unusable.
+          SEMVER='^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$'
+          if [[ ! "$VERSION" =~ $SEMVER ]]; then
+            echo "::error::'$VERSION' is not a valid semantic version"
+            exit 1
+          fi
+
+          if [[ "$VERSION" == *-* ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Building version $VERSION"
+
+  test:
+    name: Test before release
+    needs: version
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # Windows runs the full suite including the UI tests; see ci.yml for why the other
+      # platforms do not. A release should not go out on a red build.
+      - name: Test
+        run: dotnet test Netiflux.slnx --configuration Release
+
+  build:
+    name: ${{ matrix.rid }}
+    needs: [version, test]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: win-x64
+            archive: zip
+          - rid: win-arm64
+            archive: zip
+          - rid: linux-x64
+            archive: tar.gz
+          - rid: linux-arm64
+            archive: tar.gz
+          - rid: osx-x64
+            archive: tar.gz
+          - rid: osx-arm64
+            archive: tar.gz
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # Self-contained so users need no .NET install, single-file so a release is one
+      # thing to download. Deliberately not trimmed and not AOT: Terminal.Gui's
+      # configuration system, System.Text.Json and AngleSharp all lean on reflection, and
+      # a trimmed build would fail at runtime in ways CI would not catch.
+      - name: Publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet publish src/Netiflux/Netiflux.csproj \
+            --configuration Release \
+            --runtime ${{ matrix.rid }} \
+            --self-contained true \
+            -p:Version=${{ needs.version.outputs.version }} \
+            -p:PublishSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
+            -p:DebugType=none \
+            --output publish/${{ matrix.rid }}
+
+      - name: Package
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.version.outputs.version }}"
+          RID="${{ matrix.rid }}"
+          STAGE="stage/netiflux-$VERSION-$RID"
+
+          mkdir -p "$STAGE" dist
+          cp -r publish/"$RID"/. "$STAGE"/
+          cp README.md LICENSE "$STAGE"/
+
+          if [ "${{ matrix.archive }}" = "zip" ]; then
+            (cd stage && zip -qr "../dist/netiflux-$VERSION-$RID.zip" "netiflux-$VERSION-$RID")
+          else
+            chmod +x "$STAGE"/netiflux
+            tar -czf "dist/netiflux-$VERSION-$RID.tar.gz" -C stage "netiflux-$VERSION-$RID"
+          fi
+
+          (cd dist && sha256sum netiflux-"$VERSION"-"$RID".* > "netiflux-$VERSION-$RID.sha256")
+          ls -la dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: netiflux-${{ matrix.rid }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 7
+
+  release:
+    name: Publish release
+    # Only tag pushes publish. A manual run builds artifacts for inspection and stops.
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [version, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Collect checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd artifacts
+          cat *.sha256 > SHA256SUMS.txt
+          rm -f *.sha256
+          echo "Release assets:"
+          ls -la
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.version.outputs.version }}"
+
+          PRERELEASE_FLAG=""
+          if [ "${{ needs.version.outputs.prerelease }}" = "true" ]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+
+          # Ask the API for the generated changelog rather than passing --generate-notes
+          # alongside --notes-file, which is not a documented combination. If it fails the
+          # release still goes out with the install instructions.
+          GENERATED=$(gh api "repos/$GITHUB_REPOSITORY/releases/generate-notes" \
+            -f tag_name="v$VERSION" -q .body 2>/dev/null || true)
+
+          {
+            cat <<'EOF'
+          ## Install
+
+          Download the archive for your platform, unpack it, and run `netiflux`. The
+          builds are self-contained, so no .NET runtime is required.
+
+          On macOS and Linux you may need to mark it executable:
+
+          ```
+          chmod +x netiflux
+          ```
+
+          First run needs a config file — `netiflux --where` prints its location, and
+          `netiflux --check` verifies your server URL and API token. See the README for
+          the full setup.
+
+          Verify a download against `SHA256SUMS.txt`.
+          EOF
+
+            if [ -n "$GENERATED" ]; then
+              printf '\n%s\n' "$GENERATED"
+            fi
+          } > notes.md
+
+          gh release create "v$VERSION" \
+            --title "v$VERSION" \
+            --notes-file notes.md \
+            $PRERELEASE_FLAG \
+            artifacts/*

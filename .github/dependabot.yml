@@ -1,0 +1,53 @@
+version: 2
+
+updates:
+  # NuGet dependencies. Terminal.Gui is the one that matters: the app pins 2.4.17 and
+  # works around two defects in it (see ThemeCatalog and tests/Netiflux.Ui.Tests/README.md),
+  # so its updates are grouped alone and deserve a real look rather than an auto-merge.
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: America/New_York
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: deps
+    labels:
+      - dependencies
+    groups:
+      terminal-gui:
+        patterns:
+          - Terminal.Gui
+      test-tooling:
+        patterns:
+          - xunit*
+          - Microsoft.NET.Test.Sdk
+          - coverlet*
+      other:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - Terminal.Gui
+          - xunit*
+          - Microsoft.NET.Test.Sdk
+          - coverlet*
+
+  # Workflow actions, so the release pipeline does not rot.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: America/New_York
+    commit-message:
+      prefix: ci
+    labels:
+      - dependencies
+      - github-actions
+    groups:
+      actions:
+        patterns:
+          - "*"

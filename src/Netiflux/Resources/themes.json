@@ -1,0 +1,542 @@
+{
+  "$comment": [
+    "Netiflux bundled themes. Loaded into Terminal.Gui's ConfigurationManager at startup.",
+    "To add your own theme, copy one of these blocks into ~/.tui/config.json (or",
+    "%USERPROFILE%\\.tui\\config.json) under a top-level \"Themes\" array. Anything you put",
+    "there overrides what ships here, so you can also retune a single scheme of a built-in",
+    "theme without copying the whole thing.",
+    "",
+    "Scheme roles used by Netiflux:",
+    "  Base        - window chrome and general surfaces",
+    "  Sidebar     - the views/feeds/categories rail",
+    "  EntryUnread - unread rows in the entry list (should read as 'bright / demands action')",
+    "  EntryRead   - already-read rows (should recede)",
+    "  EntrySaved  - rows pushed to the bookmark service (distinct accent, the triage payoff)",
+    "  Reader      - the article body",
+    "  ReaderMeta  - byline and separators inside the reader",
+    "  Banner      - the title bar strip",
+    "  StatusGood / StatusBad - transient toasts"
+  ],
+
+  "Themes": [
+    {
+      "Netiflux Dark": {
+        "Window.DefaultBorderStyle": "Single",
+        "Dialog.DefaultBorderStyle": "Rounded",
+        "FrameView.DefaultBorderStyle": "Single",
+        "Schemes": [
+          {
+            "Base": {
+              "Normal":    { "Foreground": "#cdd3de", "Background": "#13151c" },
+              "Focus":     { "Foreground": "#0b0d12", "Background": "#7aa2f7" },
+              "HotNormal": { "Foreground": "#7aa2f7", "Background": "#13151c", "Style": "Bold" },
+              "HotFocus":  { "Foreground": "#0b0d12", "Background": "#7aa2f7", "Style": "Bold" },
+              "Disabled":  { "Foreground": "#5a6172", "Background": "#13151c", "Style": "Faint" },
+              "Highlight": { "Foreground": "#e0af68", "Background": "#13151c" }
+            }
+          },
+          {
+            "Accent": {
+              "Normal":    { "Foreground": "#7aa2f7", "Background": "#13151c", "Style": "Bold" },
+              "Focus":     { "Foreground": "#0b0d12", "Background": "#7aa2f7", "Style": "Bold" }
+            }
+          },
+          {
+            "Dialog": {
+              "Normal":    { "Foreground": "#cdd3de", "Background": "#1a1d26" },
+              "Focus":     { "Foreground": "#0b0d12", "Background": "#7aa2f7" },
+              "HotNormal": { "Foreground": "#7aa2f7", "Background": "#1a1d26", "Style": "Bold" },
+              "HotFocus":  { "Foreground": "#0b0d12", "Background": "#7aa2f7", "Style": "Bold" }
+            }
+          },
+          {
+            "Menu": {
+              "Normal":    { "Foreground": "#cdd3de", "Background": "#1a1d26" },
+              "Focus":     { "Foreground": "#0b0d12", "Background": "#7aa2f7" },
+              "HotNormal": { "Foreground": "#7aa2f7", "Background": "#1a1d26", "Style": "Bold" },
+              "HotFocus":  { "Foreground": "#0b0d12", "Background": "#7aa2f7", "Style": "Bold" },
+              "Disabled":  { "Foreground": "#5a6172", "Background": "#1a1d26", "Style": "Faint" }
+            }
+          },
+          {
+            "Error": {
+              "Normal":    { "Foreground": "#f7768e", "Background": "#1a1d26" },
+              "Focus":     { "Foreground": "#13151c", "Background": "#f7768e" },
+              "HotNormal": { "Foreground": "#ffffff", "Background": "#1a1d26", "Style": "Bold" }
+            }
+          },
+          {
+            "Sidebar": {
+              "Normal":    { "Foreground": "#8f97a8", "Background": "#0f1117" },
+              "Focus":     { "Foreground": "#e6eaf2", "Background": "#232a3a", "Style": "Bold" },
+              "HotNormal": { "Foreground": "#7aa2f7", "Background": "#0f1117" },
+              "HotFocus":  { "Foreground": "#7aa2f7", "Background": "#232a3a", "Style": "Bold" }
+            }
+          },
+          {
+            "EntryUnread": {
+              "Normal":    { "Foreground": "#dfe5f0", "Background": "#13151c", "Style": "Bold" },
+              "Focus":     { "Foreground": "#0b0d12", "Background": "#7aa2f7", "Style": "Bold" }
+            }
+          },
+          {
+            "EntryRead": {
+              "Normal":    { "Foreground": "#6e7688", "Background": "#13151c" },
+              "Focus":     { "Foreground": "#0b0d12", "Background": "#5f7fc4" }
+            }
+          },
+          {
+            "EntrySaved": {
+              "Normal":    { "Foreground": "#c4a7e7", "Background": "#13151c" },
+              "Focus":     { "Foreground": "#14101c", "Background": "#c4a7e7", "Style": "Bold" }
+            }
+          },
+          {
+            "Reader": {
+              "Normal":    { "Foreground": "#cdd3de", "Background": "#13151c" },
+              "Focus":     { "Foreground": "#cdd3de", "Background": "#13151c" },
+              "Highlight": { "Foreground": "#0b0d12", "Background": "#e0af68" }
+            }
+          },
+          {
+            "ReaderMeta": {
+              "Normal":    { "Foreground": "#7f8798", "Background": "#13151c", "Style": "Italic" }
+            }
+          },
+          {
+            "Banner": {
+              "Normal":    { "Foreground": "#0b0d12", "Background": "#7aa2f7", "Style": "Bold" },
+              "HotNormal": { "Foreground": "#13151c", "Background": "#7aa2f7", "Style": "Bold" }
+            }
+          },
+          {
+            "StatusGood": {
+              "Normal":    { "Foreground": "#9ece6a", "Background": "#13151c", "Style": "Bold" }
+            }
+          },
+          {
+            "StatusBad": {
+              "Normal":    { "Foreground": "#f7768e", "Background": "#13151c", "Style": "Bold" }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "Netiflux Light": {
+        "Window.DefaultBorderStyle": "Single",
+        "Dialog.DefaultBorderStyle": "Rounded",
+        "FrameView.DefaultBorderStyle": "Single",
+        "Schemes": [
+          {
+            "Base": {
+              "Normal":    { "Foreground": "#2e2c28", "Background": "#fdfbf7" },
+              "Focus":     { "Foreground": "#ffffff", "Background": "#2f6fd0" },
+              "HotNormal": { "Foreground": "#2f6fd0", "Background": "#fdfbf7", "Style": "Bold" },
+              "HotFocus":  { "Foreground": "#ffffff", "Background": "#2f6fd0", "Style": "Bold" },
+              "Disabled":  { "Foreground": "#948d80", "Background": "#fdfbf7", "Style": "Faint" },
+              "Highlight": { "Foreground": "#8a5a00", "Background": "#fdfbf7" }
+            }
+          },
+          {
+            "Accent": {
+              "Normal":    { "Foreground": "#2f6fd0", "Background": "#fdfbf7", "Style": "Bold" },
+              "Focus":     { "Foreground": "#ffffff", "Background": "#2f6fd0", "Style": "Bold" }
+            }
+          },
+          {
+            "Dialog": {
+              "Normal":    { "Foreground": "#2e2c28", "Background": "#f2eee5" },
+              "Focus":     { "Foreground": "#ffffff", "Background": "#2f6fd0" },
+              "HotNormal": { "Foreground": "#2f6fd0", "Background": "#f2eee5", "Style": "Bold" },
+              "HotFocus":  { "Foreground": "#ffffff", "Background": "#2f6fd0", "Style": "Bold" }
+            }
+          },
+          {
+            "Menu": {
+              "Normal":    { "Foreground": "#2e2c28", "Background": "#f2eee5" },
+              "Focus":     { "Foreground": "#ffffff", "Background": "#2f6fd0" },
+              "HotNormal": { "Foreground": "#2f6fd0", "Background": "#f2eee5", "Style": "Bold" },
+              "HotFocus":  { "Foreground": "#ffffff", "Background": "#2f6fd0", "Style": "Bold" },
+              "Disabled":  { "Foreground": "#948d80", "Background": "#f2eee5", "Style": "Faint" }
+            }
+          },
+          {
+            "Error": {
+              "Normal":    { "Foreground": "#c0392b", "Background": "#f2eee5" },
+              "Focus":     { "Foreground": "#ffffff", "Background": "#c0392b" },
+              "HotNormal": { "Foreground": "#8b1f14", "Background": "#f2eee5", "Style": "Bold" }
+            }
+          },
+          {
+            "Sidebar": {
+              "Normal":    { "Foreground": "#5f5a51", "Background": "#f2eee5" },
+              "Focus":     { "Foreground": "#1d1c19", "Background": "#e2dccd", "Style": "Bold" },
+              "HotNormal": { "Foreground": "#2f6fd0", "Background": "#f2eee5" },
+              "HotFocus":  { "Foreground": "#2f6fd0", "Background": "#e2dccd", "Style": "Bold" }
+            }
+          },
+          {
+            "EntryUnread": {
+              "Normal":    { "Foreground": "#1d1c19", "Background": "#fdfbf7", "Style": "Bold" },
+              "Focus":     { "Foreground": "#ffffff", "Background": "#2f6fd0", "Style": "Bold" }
+            }
+          },
+          {
+            "EntryRead": {
+              "Normal":    { "Foreground": "#8d867a", "Background": "#fdfbf7" },
+              "Focus":     { "Foreground": "#ffffff", "Background": "#6d94d8" }
+            }
+          },
+          {
+            "EntrySaved": {
+              "Normal":    { "Foreground": "#7c4dbd", "Background": "#fdfbf7" },
+              "Focus":     { "Foreground": "#ffffff", "Background": "#7c4dbd", "Style": "Bold" }
+            }
+          },
+          {
+            "Reader": {
+              "Normal":    { "Foreground": "#2e2c28", "Background": "#fdfbf7" },
+              "Focus":     { "Foreground": "#2e2c28", "Background": "#fdfbf7" },
+              "Highlight": { "Foreground": "#2e2c28", "Background": "#f4e3b2" }
+            }
+          },
+          {
+            "ReaderMeta": {
+              "Normal":    { "Foreground": "#6f6a60", "Background": "#fdfbf7", "Style": "Italic" }
+            }
+          },
+          {
+            "Banner": {
+              "Normal":    { "Foreground": "#ffffff", "Background": "#2f6fd0", "Style": "Bold" },
+              "HotNormal": { "Foreground": "#ffffff", "Background": "#2f6fd0", "Style": "Bold" }
+            }
+          },
+          {
+            "StatusGood": {
+              "Normal":    { "Foreground": "#3f7d20", "Background": "#fdfbf7", "Style": "Bold" }
+            }
+          },
+          {
+            "StatusBad": {
+              "Normal":    { "Foreground": "#c0392b", "Background": "#fdfbf7", "Style": "Bold" }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "Netiflux Gruvbox": {
+        "Window.DefaultBorderStyle": "Single",
+        "Dialog.DefaultBorderStyle": "Rounded",
+        "FrameView.DefaultBorderStyle": "Single",
+        "Schemes": [
+          {
+            "Base": {
+              "Normal":    { "Foreground": "#ebdbb2", "Background": "#282828" },
+              "Focus":     { "Foreground": "#fbf1c7", "Background": "#458588" },
+              "HotNormal": { "Foreground": "#fabd2f", "Background": "#282828", "Style": "Bold" },
+              "HotFocus":  { "Foreground": "#fbf1c7", "Background": "#458588", "Style": "Bold" },
+              "Disabled":  { "Foreground": "#7c6f64", "Background": "#282828", "Style": "Faint" },
+              "Highlight": { "Foreground": "#fabd2f", "Background": "#282828" }
+            }
+          },
+          {
+            "Accent": {
+              "Normal":    { "Foreground": "#83a598", "Background": "#282828", "Style": "Bold" },
+              "Focus":     { "Foreground": "#fbf1c7", "Background": "#458588", "Style": "Bold" }
+            }
+          },
+          {
+            "Dialog": {
+              "Normal":    { "Foreground": "#ebdbb2", "Background": "#3c3836" },
+              "Focus":     { "Foreground": "#fbf1c7", "Background": "#458588" },
+              "HotNormal": { "Foreground": "#fabd2f", "Background": "#3c3836", "Style": "Bold" },
+              "HotFocus":  { "Foreground": "#fbf1c7", "Background": "#458588", "Style": "Bold" }
+            }
+          },
+          {
+            "Menu": {
+              "Normal":    { "Foreground": "#ebdbb2", "Background": "#3c3836" },
+              "Focus":     { "Foreground": "#fbf1c7", "Background": "#458588" },
+              "HotNormal": { "Foreground": "#fabd2f", "Background": "#3c3836", "Style": "Bold" },
+              "HotFocus":  { "Foreground": "#fbf1c7", "Background": "#458588", "Style": "Bold" },
+              "Disabled":  { "Foreground": "#7c6f64", "Background": "#3c3836", "Style": "Faint" }
+            }
+          },
+          {
+            "Error": {
+              "Normal":    { "Foreground": "#fb4934", "Background": "#3c3836" },
+              "Focus":     { "Foreground": "#282828", "Background": "#fb4934" },
+              "HotNormal": { "Foreground": "#fbf1c7", "Background": "#3c3836", "Style": "Bold" }
+            }
+          },
+          {
+            "Sidebar": {
+              "Normal":    { "Foreground": "#a89984", "Background": "#1d2021" },
+              "Focus":     { "Foreground": "#fbf1c7", "Background": "#3c3836", "Style": "Bold" },
+              "HotNormal": { "Foreground": "#83a598", "Background": "#1d2021" },
+              "HotFocus":  { "Foreground": "#83a598", "Background": "#3c3836", "Style": "Bold" }
+            }
+          },
+          {
+            "EntryUnread": {
+              "Normal":    { "Foreground": "#fbf1c7", "Background": "#282828", "Style": "Bold" },
+              "Focus":     { "Foreground": "#fbf1c7", "Background": "#458588", "Style": "Bold" }
+            }
+          },
+          {
+            "EntryRead": {
+              "Normal":    { "Foreground": "#928374", "Background": "#282828" },
+              "Focus":     { "Foreground": "#ebdbb2", "Background": "#3a5c5e" }
+            }
+          },
+          {
+            "EntrySaved": {
+              "Normal":    { "Foreground": "#d3869b", "Background": "#282828" },
+              "Focus":     { "Foreground": "#282828", "Background": "#d3869b", "Style": "Bold" }
+            }
+          },
+          {
+            "Reader": {
+              "Normal":    { "Foreground": "#ebdbb2", "Background": "#282828" },
+              "Focus":     { "Foreground": "#ebdbb2", "Background": "#282828" },
+              "Highlight": { "Foreground": "#282828", "Background": "#fabd2f" }
+            }
+          },
+          {
+            "ReaderMeta": {
+              "Normal":    { "Foreground": "#a89984", "Background": "#282828", "Style": "Italic" }
+            }
+          },
+          {
+            "Banner": {
+              "Normal":    { "Foreground": "#282828", "Background": "#d79921", "Style": "Bold" },
+              "HotNormal": { "Foreground": "#282828", "Background": "#d79921", "Style": "Bold" }
+            }
+          },
+          {
+            "StatusGood": {
+              "Normal":    { "Foreground": "#b8bb26", "Background": "#282828", "Style": "Bold" }
+            }
+          },
+          {
+            "StatusBad": {
+              "Normal":    { "Foreground": "#fb4934", "Background": "#282828", "Style": "Bold" }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "Netiflux Nord": {
+        "Window.DefaultBorderStyle": "Single",
+        "Dialog.DefaultBorderStyle": "Rounded",
+        "FrameView.DefaultBorderStyle": "Single",
+        "Schemes": [
+          {
+            "Base": {
+              "Normal":    { "Foreground": "#d8dee9", "Background": "#2e3440" },
+              "Focus":     { "Foreground": "#2e3440", "Background": "#88c0d0" },
+              "HotNormal": { "Foreground": "#88c0d0", "Background": "#2e3440", "Style": "Bold" },
+              "HotFocus":  { "Foreground": "#2e3440", "Background": "#88c0d0", "Style": "Bold" },
+              "Disabled":  { "Foreground": "#667085", "Background": "#2e3440", "Style": "Faint" },
+              "Highlight": { "Foreground": "#ebcb8b", "Background": "#2e3440" }
+            }
+          },
+          {
+            "Accent": {
+              "Normal":    { "Foreground": "#88c0d0", "Background": "#2e3440", "Style": "Bold" },
+              "Focus":     { "Foreground": "#2e3440", "Background": "#88c0d0", "Style": "Bold" }
+            }
+          },
+          {
+            "Dialog": {
+              "Normal":    { "Foreground": "#d8dee9", "Background": "#3b4252" },
+              "Focus":     { "Foreground": "#2e3440", "Background": "#88c0d0" },
+              "HotNormal": { "Foreground": "#88c0d0", "Background": "#3b4252", "Style": "Bold" },
+              "HotFocus":  { "Foreground": "#2e3440", "Background": "#88c0d0", "Style": "Bold" }
+            }
+          },
+          {
+            "Menu": {
+              "Normal":    { "Foreground": "#d8dee9", "Background": "#3b4252" },
+              "Focus":     { "Foreground": "#2e3440", "Background": "#88c0d0" },
+              "HotNormal": { "Foreground": "#88c0d0", "Background": "#3b4252", "Style": "Bold" },
+              "HotFocus":  { "Foreground": "#2e3440", "Background": "#88c0d0", "Style": "Bold" },
+              "Disabled":  { "Foreground": "#667085", "Background": "#3b4252", "Style": "Faint" }
+            }
+          },
+          {
+            "Error": {
+              "Normal":    { "Foreground": "#bf616a", "Background": "#3b4252" },
+              "Focus":     { "Foreground": "#eceff4", "Background": "#bf616a" },
+              "HotNormal": { "Foreground": "#eceff4", "Background": "#3b4252", "Style": "Bold" }
+            }
+          },
+          {
+            "Sidebar": {
+              "Normal":    { "Foreground": "#8b98ad", "Background": "#272c36" },
+              "Focus":     { "Foreground": "#eceff4", "Background": "#3b4252", "Style": "Bold" },
+              "HotNormal": { "Foreground": "#88c0d0", "Background": "#272c36" },
+              "HotFocus":  { "Foreground": "#88c0d0", "Background": "#3b4252", "Style": "Bold" }
+            }
+          },
+          {
+            "EntryUnread": {
+              "Normal":    { "Foreground": "#eceff4", "Background": "#2e3440", "Style": "Bold" },
+              "Focus":     { "Foreground": "#2e3440", "Background": "#88c0d0", "Style": "Bold" }
+            }
+          },
+          {
+            "EntryRead": {
+              "Normal":    { "Foreground": "#71809b", "Background": "#2e3440" },
+              "Focus":     { "Foreground": "#2e3440", "Background": "#6d97a5" }
+            }
+          },
+          {
+            "EntrySaved": {
+              "Normal":    { "Foreground": "#b48ead", "Background": "#2e3440" },
+              "Focus":     { "Foreground": "#2e3440", "Background": "#b48ead", "Style": "Bold" }
+            }
+          },
+          {
+            "Reader": {
+              "Normal":    { "Foreground": "#d8dee9", "Background": "#2e3440" },
+              "Focus":     { "Foreground": "#d8dee9", "Background": "#2e3440" },
+              "Highlight": { "Foreground": "#2e3440", "Background": "#ebcb8b" }
+            }
+          },
+          {
+            "ReaderMeta": {
+              "Normal":    { "Foreground": "#8b98ad", "Background": "#2e3440", "Style": "Italic" }
+            }
+          },
+          {
+            "Banner": {
+              "Normal":    { "Foreground": "#2e3440", "Background": "#88c0d0", "Style": "Bold" },
+              "HotNormal": { "Foreground": "#2e3440", "Background": "#88c0d0", "Style": "Bold" }
+            }
+          },
+          {
+            "StatusGood": {
+              "Normal":    { "Foreground": "#a3be8c", "Background": "#2e3440", "Style": "Bold" }
+            }
+          },
+          {
+            "StatusBad": {
+              "Normal":    { "Foreground": "#bf616a", "Background": "#2e3440", "Style": "Bold" }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "Netiflux Rose Pine": {
+        "Window.DefaultBorderStyle": "Single",
+        "Dialog.DefaultBorderStyle": "Rounded",
+        "FrameView.DefaultBorderStyle": "Single",
+        "Schemes": [
+          {
+            "Base": {
+              "Normal":    { "Foreground": "#e0def4", "Background": "#191724" },
+              "Focus":     { "Foreground": "#e0def4", "Background": "#31748f" },
+              "HotNormal": { "Foreground": "#ebbcba", "Background": "#191724", "Style": "Bold" },
+              "HotFocus":  { "Foreground": "#faf4ed", "Background": "#31748f", "Style": "Bold" },
+              "Disabled":  { "Foreground": "#6e6a86", "Background": "#191724", "Style": "Faint" },
+              "Highlight": { "Foreground": "#f6c177", "Background": "#191724" }
+            }
+          },
+          {
+            "Accent": {
+              "Normal":    { "Foreground": "#9ccfd8", "Background": "#191724", "Style": "Bold" },
+              "Focus":     { "Foreground": "#e0def4", "Background": "#31748f", "Style": "Bold" }
+            }
+          },
+          {
+            "Dialog": {
+              "Normal":    { "Foreground": "#e0def4", "Background": "#1f1d2e" },
+              "Focus":     { "Foreground": "#e0def4", "Background": "#31748f" },
+              "HotNormal": { "Foreground": "#ebbcba", "Background": "#1f1d2e", "Style": "Bold" },
+              "HotFocus":  { "Foreground": "#faf4ed", "Background": "#31748f", "Style": "Bold" }
+            }
+          },
+          {
+            "Menu": {
+              "Normal":    { "Foreground": "#e0def4", "Background": "#1f1d2e" },
+              "Focus":     { "Foreground": "#e0def4", "Background": "#31748f" },
+              "HotNormal": { "Foreground": "#ebbcba", "Background": "#1f1d2e", "Style": "Bold" },
+              "HotFocus":  { "Foreground": "#faf4ed", "Background": "#31748f", "Style": "Bold" },
+              "Disabled":  { "Foreground": "#6e6a86", "Background": "#1f1d2e", "Style": "Faint" }
+            }
+          },
+          {
+            "Error": {
+              "Normal":    { "Foreground": "#eb6f92", "Background": "#1f1d2e" },
+              "Focus":     { "Foreground": "#191724", "Background": "#eb6f92" },
+              "HotNormal": { "Foreground": "#faf4ed", "Background": "#1f1d2e", "Style": "Bold" }
+            }
+          },
+          {
+            "Sidebar": {
+              "Normal":    { "Foreground": "#908caa", "Background": "#14121f" },
+              "Focus":     { "Foreground": "#e0def4", "Background": "#26233a", "Style": "Bold" },
+              "HotNormal": { "Foreground": "#9ccfd8", "Background": "#14121f" },
+              "HotFocus":  { "Foreground": "#9ccfd8", "Background": "#26233a", "Style": "Bold" }
+            }
+          },
+          {
+            "EntryUnread": {
+              "Normal":    { "Foreground": "#e0def4", "Background": "#191724", "Style": "Bold" },
+              "Focus":     { "Foreground": "#faf4ed", "Background": "#31748f", "Style": "Bold" }
+            }
+          },
+          {
+            "EntryRead": {
+              "Normal":    { "Foreground": "#6e6a86", "Background": "#191724" },
+              "Focus":     { "Foreground": "#e0def4", "Background": "#2a5568" }
+            }
+          },
+          {
+            "EntrySaved": {
+              "Normal":    { "Foreground": "#c4a7e7", "Background": "#191724" },
+              "Focus":     { "Foreground": "#191724", "Background": "#c4a7e7", "Style": "Bold" }
+            }
+          },
+          {
+            "Reader": {
+              "Normal":    { "Foreground": "#e0def4", "Background": "#191724" },
+              "Focus":     { "Foreground": "#e0def4", "Background": "#191724" },
+              "Highlight": { "Foreground": "#191724", "Background": "#f6c177" }
+            }
+          },
+          {
+            "ReaderMeta": {
+              "Normal":    { "Foreground": "#908caa", "Background": "#191724", "Style": "Italic" }
+            }
+          },
+          {
+            "Banner": {
+              "Normal":    { "Foreground": "#191724", "Background": "#ebbcba", "Style": "Bold" },
+              "HotNormal": { "Foreground": "#191724", "Background": "#ebbcba", "Style": "Bold" }
+            }
+          },
+          {
+            "StatusGood": {
+              "Normal":    { "Foreground": "#9ccfd8", "Background": "#191724", "Style": "Bold" }
+            }
+          },
+          {
+            "StatusBad": {
+              "Normal":    { "Foreground": "#eb6f92", "Background": "#191724", "Style": "Bold" }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

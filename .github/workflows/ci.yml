@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Windows runs everything, including the UI suite. Those tests start a real
+          # Terminal.Gui main loop, which needs a console the driver can size; whether a
+          # TTY-less Linux or macOS runner provides one is untested, so elsewhere we run
+          # the unit tests only rather than ship a workflow that might be red on arrival.
+          - os: windows-latest
+            name: windows (all tests)
+            test-target: Netiflux.slnx
+          - os: ubuntu-latest
+            name: linux (unit tests)
+            test-target: tests/Netiflux.Core.Tests/Netiflux.Core.Tests.csproj
+          - os: macos-latest
+            name: macos (unit tests)
+            test-target: tests/Netiflux.Core.Tests/Netiflux.Core.Tests.csproj
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore Netiflux.slnx
+
+      - name: Build
+        run: dotnet build Netiflux.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test ${{ matrix.test-target }} --configuration Release --no-build --verbosity normal

@@ -1,0 +1,18 @@
+# Normalise line endings. The release workflow runs its shell scripts on Linux runners,
+# and CRLF sneaking into a checked-in script breaks it in ways that only show up there.
+* text=auto eol=lf
+
+# Windows-only files keep CRLF.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Never touch binaries.
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.gz binary
+*.exe binary
+*.dll binary
