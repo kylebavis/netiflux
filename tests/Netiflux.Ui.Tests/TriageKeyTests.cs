@@ -36,6 +36,16 @@ public class TriageKeyTests
     }
 
     [Fact]
+    public async Task InitialLoad_FetchesEntriesOnce()
+    {
+        // Restoring the sidebar cursor after the first load must not start a second one;
+        // the two would race over the session's entry list.
+        await using var ui = await ShellHarness.StartAsync();
+
+        Assert.Equal(1, ui.Client.EntryRequestCount);
+    }
+
+    [Fact]
     public async Task Star_AppliesToTheHighlightedRow()
     {
         await using var ui = await ShellHarness.StartAsync();
