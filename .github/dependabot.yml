@@ -1,8 +1,8 @@
 version: 2
 
 updates:
-  # NuGet dependencies. Terminal.Gui is the one that matters: the app pins 2.4.17 and
-  # works around two defects in it (see ThemeCatalog and tests/Netiflux.Ui.Tests/README.md),
+  # NuGet dependencies. Terminal.Gui is the one that matters: its config API changes between minor
+  # releases (see ThemeCatalog) and the tests work around quirks (tests/Netiflux.Ui.Tests/README.md),
   # so its updates are grouped alone and deserve a real look rather than an auto-merge.
   - package-ecosystem: nuget
     directory: /

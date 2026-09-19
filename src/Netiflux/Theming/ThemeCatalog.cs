@@ -9,18 +9,15 @@ namespace Netiflux.Theming;
 
 /// <summary>
 /// Owns Netiflux's theme story: merges the bundled palettes with any the user wrote,
-/// hands them to Terminal.Gui's <see cref="ConfigurationManager"/>, and resolves the
+/// hands them to Terminal.Gui's <see cref="TuiConfigurationBuilder"/>, and resolves the
 /// app-specific scheme names the UI draws with.
 /// </summary>
 /// <remarks>
-/// This uses the <c>ConfigurationManager</c> / <c>ThemeManager</c> statics, which
-/// Terminal.Gui 2.4.17 marks obsolete in favour of <c>TuiConfigurationBuilder</c>. The
-/// replacement is not working yet in that release: its <c>ThemeManager.ThemeNames</c>
-/// returns only "Default" and <c>SwitchTheme</c> fails, even for the library's own
-/// built-in themes, while the legacy path loads and switches everything correctly.
-/// Revisit when the new API becomes functional.
+/// Terminal.Gui 2.5.0 expects <c>Themes</c> and <c>Schemes</c> as objects keyed by name
+/// and settings nested rather than dotted. <c>themes.json</c> is written in the older
+/// array / dotted form, so <see cref="BuildMergedConfig"/> translates it (and passes the
+/// new form through unchanged).
 /// </remarks>
-#pragma warning disable CS0618 // Obsolete configuration API — see the remarks above.
 public static class ThemeCatalog
 {
     private const string BundledResourceName = "Netiflux.Resources.themes.json";
@@ -45,8 +42,8 @@ public static class ThemeCatalog
 
         try
         {
-            ConfigurationManager.RuntimeConfig = BuildMergedConfig(warnings);
-            ConfigurationManager.Enable(ConfigLocations.All);
+            TuiConfigurationBuilder.Shared.RuntimeConfig = BuildMergedConfig(warnings);
+            TuiConfigurationBuilder.Shared.ApplyToStaticFacades();
             _enabled = true;
         }
         catch (Exception ex) when (ex is JsonException or IOException or InvalidOperationException)
@@ -85,7 +82,6 @@ public static class ThemeCatalog
         }
 
         ThemeManager.Theme = target;
-        ConfigurationManager.Apply();
         SchemeCache.Clear();
     }
 
@@ -182,13 +178,62 @@ public static class ThemeCatalog
             }
         }
 
-        var array = new JsonArray();
+        var themes = new JsonObject();
         foreach (var name in order)
         {
-            array.Add(new JsonObject { [name] = themesByName[name]?.DeepClone() });
+            if (themesByName[name] is JsonObject body)
+            {
+                themes[name] = NormalizeTheme(body);
+            }
         }
 
-        return new JsonObject { ["Themes"] = array }.ToJsonString();
+        return new JsonObject { ["Themes"] = themes }.ToJsonString();
+    }
+
+    /// <summary>
+    /// Rewrites one theme body into the nested form: <c>Schemes</c> as an object rather
+    /// than an array of single-key objects, and <c>Window.DefaultBorderStyle</c>-style keys
+    /// as <c>Window: { DefaultBorderStyle }</c>.
+    /// </summary>
+    private static JsonObject NormalizeTheme(JsonObject body)
+    {
+        var result = new JsonObject();
+
+        foreach (var (key, value) in body)
+        {
+            if (key == "Schemes" && value is JsonArray schemeList)
+            {
+                var schemes = new JsonObject();
+                foreach (var wrapper in schemeList.OfType<JsonObject>())
+                {
+                    foreach (var (schemeName, scheme) in wrapper)
+                    {
+                        schemes[schemeName] = scheme?.DeepClone();
+                    }
+                }
+
+                result[key] = schemes;
+                continue;
+            }
+
+            var dot = key.IndexOf('.');
+            if (dot <= 0)
+            {
+                result[key] = value?.DeepClone();
+                continue;
+            }
+
+            var section = key[..dot];
+            if (result[section] is not JsonObject nested)
+            {
+                nested = new JsonObject();
+                result[section] = nested;
+            }
+
+            nested[key[(dot + 1)..]] = value?.DeepClone();
+        }
+
+        return result;
     }
 
     private static IEnumerable<(string Name, JsonNode? Body)> ReadThemes(
@@ -216,18 +261,16 @@ public static class ThemeCatalog
             yield break;
         }
 
-        if (root?["Themes"] is not JsonArray themes)
+        // Accept both the array form ([{ "Name": { … } }]) and the object form.
+        var wrappers = root?["Themes"] switch
         {
-            yield break;
-        }
+            JsonArray array => array.OfType<JsonObject>(),
+            JsonObject obj => [obj],
+            _ => []
+        };
 
-        foreach (var element in themes)
+        foreach (var wrapper in wrappers)
         {
-            if (element is not JsonObject wrapper)
-            {
-                continue;
-            }
-
             foreach (var (name, body) in wrapper)
             {
                 yield return (name, body);
@@ -245,4 +288,3 @@ public static class ThemeCatalog
         return reader.ReadToEnd();
     }
 }
-#pragma warning restore CS0618

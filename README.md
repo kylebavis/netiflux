@@ -299,14 +299,5 @@ Update [`CHANGELOG.md`](CHANGELOG.md) before tagging.
 ### Dependencies
 
 [Dependabot](.github/dependabot.yml) opens weekly PRs for NuGet packages and workflow
-actions. Terminal.Gui is grouped on its own deliberately: the app pins 2.4.17 and works
-around two defects in it, so its updates want a real look rather than a rubber stamp.
-
-## Known limitation
-
-Terminal.Gui 2.4.17 marks its `ConfigurationManager` / `ThemeManager` statics obsolete in
-favour of `TuiConfigurationBuilder`, but that replacement is not functional in this
-release — it reports only the `Default` theme and its `SwitchTheme` fails, even for the
-library's own built-in themes. Netiflux therefore uses the legacy API, isolated in
-[`ThemeCatalog`](src/Netiflux/Theming/ThemeCatalog.cs), and should move over once the new
-one works.
+actions. Terminal.Gui is grouped on its own deliberately: its config API changes between
+minor releases and the app works around some of its quirks, so updates want a real look.
