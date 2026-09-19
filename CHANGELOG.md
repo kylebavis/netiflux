@@ -7,6 +7,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Terminal.Gui 2.5.0. Theme loading moved off the removed `ConfigurationManager` API; existing `themes.json` files keep working.
+
 ## [0.1.0] - 2026-08-13
 
 First release.

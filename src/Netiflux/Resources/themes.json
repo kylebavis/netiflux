@@ -1,6 +1,6 @@
 {
   "$comment": [
-    "Netiflux bundled themes. Loaded into Terminal.Gui's ConfigurationManager at startup.",
+    "Netiflux bundled themes. Loaded into Terminal.Gui at startup.",
     "To add your own theme, copy one of these blocks into ~/.tui/config.json (or",
     "%USERPROFILE%\\.tui\\config.json) under a top-level \"Themes\" array. Anything you put",
     "there overrides what ships here, so you can also retune a single scheme of a built-in",
