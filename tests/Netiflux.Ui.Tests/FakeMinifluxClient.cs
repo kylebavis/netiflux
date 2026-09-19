@@ -16,6 +16,11 @@ public sealed class FakeMinifluxClient(List<Entry> entries) : IMinifluxClient
 
     public int RefreshCount { get; private set; }
 
+    private int _entryRequests;
+
+    /// <summary>How many times the entry list has been loaded from the server.</summary>
+    public int EntryRequestCount => Volatile.Read(ref _entryRequests);
+
     /// <summary>Armed to make the next mutating call fail, for rollback tests.</summary>
     public Exception? NextFailure { get; set; }
 
@@ -24,6 +29,11 @@ public sealed class FakeMinifluxClient(List<Entry> entries) : IMinifluxClient
 
     public Task<EntryPage> GetEntriesAsync(EntryQuery query, CancellationToken ct = default)
     {
+        // The single-row starred query is how the session reads a count, not a list load.
+        if (!(query.Starred == true && query.Limit == 1))
+        {
+            Interlocked.Increment(ref _entryRequests);        }
+
         ThrowIfArmed();
 
         IEnumerable<Entry> match = Entries;

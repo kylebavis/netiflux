@@ -392,13 +392,23 @@ public sealed partial class AppShell : Window
 
         _sidebar.SetNeedsDraw();
 
-        if (selected is { } index && index < _sidebarSource.Count)
+        // Restoring the cursor is not a request to load: doing so would start a second
+        // load that clears the session's entries while the first is still being applied.
+        _suppressSidebarLoad = true;
+        try
         {
-            _sidebar.SelectedItem = index;
+            if (selected is { } index && index < _sidebarSource.Count)
+            {
+                _sidebar.SelectedItem = index;
+            }
+            else
+            {
+                _sidebar.SelectedItem = 1;
+            }
         }
-        else
+        finally
         {
-            _sidebar.SelectedItem = 1;
+            _suppressSidebarLoad = false;
         }
     }
 
@@ -552,8 +562,7 @@ public sealed partial class AppShell : Window
     }
 
     private void LoadSidebarSelection(SidebarItem item)
-    {
-        _ = RunOperationAsync($"Loading {item.Label}…", ct =>
+    {        _ = RunOperationAsync($"Loading {item.Label}…", ct =>
             _session.LoadEntriesAsync(item.ToQuery(_config.PageSize), ct),
             onSuccess: () => RefreshListFromSession(selectFirst: true));
     }
