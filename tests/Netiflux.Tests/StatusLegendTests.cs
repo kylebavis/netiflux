@@ -1,11 +1,13 @@
+using Netiflux.Ui;
 using Terminal.Gui.Input;
 
-namespace Netiflux.Ui.Tests;
+namespace Netiflux.Tests;
 
 /// <summary>
 /// The status legend is the only guidance that stays on screen — the welcome text in the
 /// reader is replaced by the first article — so it has to keep working.
 /// </summary>
+[Trait("Category", "Ui")]
 [Collection(nameof(UiTestCollection))]
 public class StatusLegendTests
 {

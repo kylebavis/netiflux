@@ -74,28 +74,6 @@ public sealed class SavedEntryStore
         }
     }
 
-    public void Forget(long entryId)
-    {
-        lock (_gate)
-        {
-            if (_saved.Remove(entryId))
-            {
-                _dirty = true;
-            }
-        }
-    }
-
-    public int Count
-    {
-        get
-        {
-            lock (_gate)
-            {
-                return _saved.Count;
-            }
-        }
-    }
-
     /// <summary>Drops the oldest quarter of records once the cap is hit.</summary>
     private void Trim()
     {

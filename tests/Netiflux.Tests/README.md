@@ -1,4 +1,4 @@
-# Netiflux.Ui.Tests
+# UI tests
 
 End-to-end tests for the TUI. Each test starts a **real `AppShell` on a real Terminal.Gui
 main loop**, presses real keys, and asserts on what happened.

@@ -3,7 +3,7 @@ using System.Text;
 using Netiflux.Core;
 using Netiflux.Core.Models;
 
-namespace Netiflux.Core.Tests;
+namespace Netiflux.Tests;
 
 public class MinifluxClientTests
 {
@@ -29,8 +29,6 @@ public class MinifluxClientTests
             Statuses = [EntryStatus.Unread, EntryStatus.Read],
             CategoryId = 7,
             Starred = true,
-            Order = EntryOrder.PublishedAt,
-            Direction = SortDirection.Desc,
             Limit = 50,
             Offset = 100
         });
@@ -166,7 +164,7 @@ public class MinifluxClientTests
 
         var ex = await Assert.ThrowsAsync<MinifluxException>(() => client.GetMeAsync());
 
-        Assert.True(ex.IsAuthFailure);
+        Assert.Equal(HttpStatusCode.Unauthorized, ex.StatusCode);
         Assert.Contains("token", ex.UserMessage, StringComparison.OrdinalIgnoreCase);
     }
 

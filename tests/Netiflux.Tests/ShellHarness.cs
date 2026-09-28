@@ -8,7 +8,7 @@ using Netiflux.Ui;
 using Terminal.Gui.App;
 using Terminal.Gui.Input;
 
-namespace Netiflux.Ui.Tests;
+namespace Netiflux.Tests;
 
 /// <summary>
 /// Runs a real <see cref="AppShell"/> against a real Terminal.Gui main loop, on the
@@ -76,7 +76,15 @@ public sealed class ShellHarness : IAsyncDisposable
         var stateDir = Path.Combine(Path.GetTempPath(), "netiflux-ui-tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(stateDir);
 
-        var client = new FakeMinifluxClient(entries?.ToList() ?? DefaultEntries());
+        var list = entries?.ToList() ?? DefaultEntries();
+        var unread = list.Count(e => e.IsUnread);
+        var client = new FakeMinifluxClient
+        {
+            Entries = list,
+            Categories = [new Category { Id = 1, Title = "Tech", TotalUnread = unread, FeedCount = 1 }],
+            Feeds = [new Feed { Id = 1, Title = "Example Feed" }],
+            FeedUnread = new() { [1] = unread }
+        };
         var effectiveConfig = config ?? new NetifluxConfig { PageSize = 50 };
         var store = SavedEntryStore.Load(Path.Combine(stateDir, "saved.json"));
         var session = new ReaderSession(client, effectiveConfig, store);

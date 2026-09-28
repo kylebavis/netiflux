@@ -33,13 +33,13 @@ jobs:
           # the unit tests only rather than ship a workflow that might be red on arrival.
           - os: windows-latest
             name: windows (all tests)
-            test-target: Netiflux.slnx
+            test-filter: ''
           - os: ubuntu-latest
             name: linux (unit tests)
-            test-target: tests/Netiflux.Core.Tests/Netiflux.Core.Tests.csproj
+            test-filter: Category!=Ui
           - os: macos-latest
             name: macos (unit tests)
-            test-target: tests/Netiflux.Core.Tests/Netiflux.Core.Tests.csproj
+            test-filter: Category!=Ui
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -55,4 +55,4 @@ jobs:
         run: dotnet build Netiflux.slnx --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test ${{ matrix.test-target }} --configuration Release --no-build --verbosity normal
+        run: dotnet test Netiflux.slnx --configuration Release --no-build --verbosity normal ${{ matrix.test-filter && format('--filter "{0}"', matrix.test-filter) || '' }}

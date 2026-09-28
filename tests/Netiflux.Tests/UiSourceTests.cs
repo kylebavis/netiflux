@@ -2,7 +2,7 @@ using Netiflux.Core.Models;
 using Netiflux.Core.State;
 using Netiflux.Ui;
 
-namespace Netiflux.Core.Tests;
+namespace Netiflux.Tests;
 
 public class UiSourceTests
 {

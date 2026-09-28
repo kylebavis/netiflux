@@ -128,9 +128,6 @@ public static class ThemeCatalog
         }
     }
 
-    /// <summary>Clears memoised schemes. Call after any runtime theme change.</summary>
-    public static void InvalidateCache() => SchemeCache.Clear();
-
     /// <summary>
     /// Combines bundled themes with the user's <c>themes.json</c>. A user theme sharing a
     /// bundled name replaces it outright, which is the least surprising rule: you edit a

@@ -1,7 +1,7 @@
 using Netiflux.Core.Models;
 using Netiflux.Core.Text;
 
-namespace Netiflux.Core.Tests;
+namespace Netiflux.Tests;
 
 public class ArticleRendererTests
 {

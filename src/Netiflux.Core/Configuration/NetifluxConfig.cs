@@ -56,20 +56,9 @@ public sealed class NetifluxConfig
     /// <summary>Entry list width as a percentage of the area right of the sidebar.</summary>
     public int ListWidthPercent { get; set; } = 38;
 
-    /// <summary>
-    /// Wrap article text at this column even when the pane is wider. Long measure is
-    /// tiring to read; 0 disables the cap.
-    /// </summary>
-    public int ReaderMaxWidth { get; set; } = 88;
-
     /// <summary>Ask Miniflux to scrape full text when an entry's content looks truncated.</summary>
     public bool AutoFetchTruncated { get; set; }
 
-    /// <summary>Minutes between background unread-count refreshes. 0 disables polling.</summary>
-    public int RefreshIntervalMinutes { get; set; } = 15;
-
     /// <summary>Remember which entries were pushed to the bookmark service (the API cannot tell us).</summary>
     public bool TrackSavedLocally { get; set; } = true;
-
-    public static NetifluxConfig CreateDefault() => new();
 }

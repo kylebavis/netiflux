@@ -11,8 +11,7 @@ public sealed record GlyphSet(
     string Starred,
     string Saved,
     string SavedAndStarred,
-    string Selected,
-    string Bullet)
+    string Selected)
 {
     public static readonly GlyphSet Unicode = new(
         Unread: "●",
@@ -20,8 +19,7 @@ public sealed record GlyphSet(
         Starred: "★",
         Saved: "⤓",
         SavedAndStarred: "✦",
-        Selected: "▸",
-        Bullet: "·");
+        Selected: "▸");
 
     public static readonly GlyphSet Ascii = new(
         Unread: "*",
@@ -29,8 +27,7 @@ public sealed record GlyphSet(
         Starred: "+",
         Saved: "v",
         SavedAndStarred: "#",
-        Selected: ">",
-        Bullet: ".");
+        Selected: ">");
 
     /// <summary>
     /// Picks a set for the current terminal. Windows Terminal, VS Code and any UTF-8

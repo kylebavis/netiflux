@@ -499,7 +499,7 @@ public sealed partial class AppShell
                     }
                     catch (MinifluxException ex)
                     {
-                        failures.Add($"{Ellipsize(entry.Title, 40)}: {ex.UserMessage}");
+                        failures.Add($"{TextFit.Truncate(entry.Title, 40)}: {ex.UserMessage}");
                     }
                 }
             },

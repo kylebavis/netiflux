@@ -18,18 +18,17 @@ namespace Netiflux.Services;
 public sealed class ReaderSession
 {
     private readonly IMinifluxClient _client;
-    private readonly SavedEntryStore _savedStore;
 
     public ReaderSession(IMinifluxClient client, NetifluxConfig config, SavedEntryStore savedStore)
     {
         _client = client;
         Config = config;
-        _savedStore = savedStore;
+        SavedStore = savedStore;
     }
 
     public NetifluxConfig Config { get; }
 
-    public SavedEntryStore SavedStore => _savedStore;
+    public SavedEntryStore SavedStore { get; }
 
     public IReadOnlyList<Category> Categories { get; private set; } = [];
 
@@ -109,7 +108,7 @@ public sealed class ReaderSession
             return 0;
         }
 
-        var next = CurrentQuery.WithOffset(Entries.Count);
+        var next = CurrentQuery with { Offset = Entries.Count };
         var page = await _client.GetEntriesAsync(next, ct).ConfigureAwait(false);
 
         CurrentQuery = next;
@@ -211,8 +210,8 @@ public sealed class ReaderSession
 
         if (Config.TrackSavedLocally)
         {
-            _savedStore.MarkSaved(entry.Id);
-            _savedStore.Flush();
+            SavedStore.MarkSaved(entry.Id);
+            SavedStore.Flush();
         }
     }
 

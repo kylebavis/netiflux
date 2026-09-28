@@ -1,11 +1,12 @@
 using Netiflux.Theming;
 
-namespace Netiflux.Ui.Tests;
+namespace Netiflux.Tests;
 
 /// <summary>
 /// Terminal.Gui silently ignores theme config it can't parse, so a format change shows up
 /// as missing themes rather than an error. These pin the bundled themes actually loading.
 /// </summary>
+[Trait("Category", "Ui")]
 [Collection(nameof(UiTestCollection))]
 public class ThemeCatalogTests
 {

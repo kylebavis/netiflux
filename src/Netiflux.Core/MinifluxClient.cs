@@ -42,10 +42,8 @@ public sealed class MinifluxClient : IMinifluxClient, IDisposable
         _http.DefaultRequestHeaders.Remove("X-Auth-Token");
         _http.DefaultRequestHeaders.Add("X-Auth-Token", apiToken);
 
-        if (!_http.DefaultRequestHeaders.UserAgent.TryParseAdd("Netiflux/0.1"))
-        {
-            // Non-fatal: some handlers pre-populate a UA we are not allowed to touch.
-        }
+        // Non-fatal if it fails: some handlers pre-populate a UA we are not allowed to touch.
+        _http.DefaultRequestHeaders.UserAgent.TryParseAdd("Netiflux/0.1");
 
         if (_http.Timeout == TimeSpan.FromSeconds(100))
         {
@@ -67,9 +65,6 @@ public sealed class MinifluxClient : IMinifluxClient, IDisposable
 
         return GetAsync<EntryPage>($"{path}?{query.ToQueryString()}", ct);
     }
-
-    public Task<Entry> GetEntryAsync(long entryId, CancellationToken ct = default) =>
-        GetAsync<Entry>($"v1/entries/{entryId.ToString(CultureInfo.InvariantCulture)}", ct);
 
     public Task<IReadOnlyList<Feed>> GetFeedsAsync(CancellationToken ct = default) =>
         GetAsync<IReadOnlyList<Feed>>("v1/feeds", ct);
@@ -94,7 +89,7 @@ public sealed class MinifluxClient : IMinifluxClient, IDisposable
         var body = new StatusUpdate
         {
             EntryIds = entryIds,
-            Status = status == EntryStatus.Read ? "read" : status == EntryStatus.Unread ? "unread" : "removed"
+            Status = status
         };
 
         using var response = await _http
@@ -235,7 +230,7 @@ public sealed class MinifluxClient : IMinifluxClient, IDisposable
     private sealed class StatusUpdate
     {
         public IReadOnlyList<long> EntryIds { get; init; } = [];
-        public string Status { get; init; } = "read";
+        public EntryStatus Status { get; init; }
     }
 
     private sealed class FetchContentResult

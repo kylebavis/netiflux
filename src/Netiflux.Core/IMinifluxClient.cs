@@ -12,8 +12,6 @@ public interface IMinifluxClient
 
     Task<EntryPage> GetEntriesAsync(EntryQuery query, CancellationToken ct = default);
 
-    Task<Entry> GetEntryAsync(long entryId, CancellationToken ct = default);
-
     Task<IReadOnlyList<Feed>> GetFeedsAsync(CancellationToken ct = default);
 
     Task<IReadOnlyList<Category>> GetCategoriesAsync(CancellationToken ct = default);

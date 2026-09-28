@@ -11,6 +11,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Terminal.Gui 2.5.0. Theme loading moved off the removed `ConfigurationManager` API; existing `themes.json` files keep working.
 
+### Removed
+
+- `reader_max_width` and `refresh_interval_minutes` config keys. Neither was ever read.
+
 ## [0.1.0] - 2026-08-13
 
 First release.

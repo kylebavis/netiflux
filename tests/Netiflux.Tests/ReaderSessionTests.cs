@@ -5,7 +5,7 @@ using Netiflux.Core.Models;
 using Netiflux.Core.State;
 using Netiflux.Services;
 
-namespace Netiflux.Core.Tests;
+namespace Netiflux.Tests;
 
 public class ReaderSessionTests : IDisposable
 {
@@ -31,7 +31,7 @@ public class ReaderSessionTests : IDisposable
         Assert.All(session.Entries.Take(2), e => Assert.Equal(EntryStatus.Read, e.Status));
         Assert.Equal(EntryStatus.Unread, session.Entries[2].Status);
         Assert.Equal(before - 2, session.UnreadTotal);
-        Assert.Contains("UpdateStatus([1,2],Read)", client.Calls);
+        Assert.Contains(client.StatusUpdates, u => u.Ids.SequenceEqual([1L, 2L]) && u.Status == EntryStatus.Read);
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class ReaderSessionTests : IDisposable
 
         await session.SetStatusAsync([session.Entries[0]], EntryStatus.Unread);
 
-        Assert.DoesNotContain(client.Calls, c => c.StartsWith("UpdateStatus", StringComparison.Ordinal));
+        Assert.Empty(client.StatusUpdates);
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class ReaderSessionTests : IDisposable
 
         await session.SaveToThirdPartyAsync(entry);
 
-        Assert.Contains(entry.Id, client.SavedEntryIds);
+        Assert.Contains(entry.Id, client.Saved);
         Assert.True(session.SavedStore.IsSaved(entry.Id));
     }
 
