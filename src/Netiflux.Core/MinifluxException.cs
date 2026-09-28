@@ -17,9 +17,6 @@ public sealed class MinifluxException : Exception
 
     public HttpStatusCode? StatusCode { get; }
 
-    public bool IsAuthFailure =>
-        StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden;
-
     /// <summary>A short, non-technical explanation suitable for the status bar.</summary>
     public string UserMessage => StatusCode switch
     {
@@ -27,7 +24,6 @@ public sealed class MinifluxException : Exception
         HttpStatusCode.Forbidden => "Access denied by the server.",
         HttpStatusCode.NotFound => "Not found on the server.",
         HttpStatusCode.InternalServerError => "Miniflux returned a server error.",
-        null => Message,
         _ => Message
     };
 }

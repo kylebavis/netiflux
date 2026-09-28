@@ -246,9 +246,7 @@ back to `Base`, so a partial theme still works.
 | `show_sidebar` | `true` | Sidebar visible at startup |
 | `sidebar_width` | `28` | Sidebar columns |
 | `list_width_percent` | `38` | Entry list share of the remaining width |
-| `reader_max_width` | `88` | Cap on article text measure |
 | `auto_fetch_truncated` | `false` | Auto-scrape entries that look like teasers |
-| `refresh_interval_minutes` | `15` | Background unread refresh; `0` disables |
 | `track_saved_locally` | `true` | Remember pushed entries |
 
 ## Project layout
@@ -256,18 +254,17 @@ back to `Base`, so a partial theme still works.
 ```
 src/Netiflux.Core        API client, models, config, HTML→Markdown, local state
 src/Netiflux             Terminal.Gui shell, list/reader panes, theming
-tests/Netiflux.Core.Tests  unit tests
-tests/Netiflux.Ui.Tests    end-to-end: a real shell on a real main loop, driven by keys
+tests/Netiflux.Tests    unit tests, plus end-to-end UI tests (Category=Ui)
 ```
 
 ```bash
 dotnet test
 ```
 
-`Netiflux.Ui.Tests` starts an actual `AppShell` on an actual Terminal.Gui main loop and
-presses keys at it, because the bugs that matter in a TUI are focus and key-routing bugs
+The `Category=Ui` tests start an actual `AppShell` on an actual Terminal.Gui main loop and
+press keys at it, because the bugs that matter in a TUI are focus and key-routing bugs
 that method-level tests cannot see. Modal dialogs are the one gap — see
-[the notes there](tests/Netiflux.Ui.Tests/README.md) for why, and what would fix it.
+[the notes there](tests/Netiflux.Tests/README.md) for why, and what would fix it.
 
 ## Releasing
 

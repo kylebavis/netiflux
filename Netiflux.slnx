@@ -4,7 +4,6 @@
     <Project Path="src/Netiflux/Netiflux.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/Netiflux.Core.Tests/Netiflux.Core.Tests.csproj" />
-    <Project Path="tests/Netiflux.Ui.Tests/Netiflux.Ui.Tests.csproj" />
+    <Project Path="tests/Netiflux.Tests/Netiflux.Tests.csproj" />
   </Folder>
 </Solution>

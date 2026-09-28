@@ -671,7 +671,7 @@ public sealed partial class AppShell : Window
     {
         _openEntry = entry;
         _reader.Text = ArticleRenderer.Render(entry);
-        _readerFrame.Title = Ellipsize(entry.Title, Math.Max(10, _readerFrame.Viewport.Width - 4));
+        _readerFrame.Title = TextFit.Truncate(entry.Title, Math.Max(10, _readerFrame.Viewport.Width - 4));
         _reader.Viewport = _reader.Viewport with { Y = 0 };
         _reader.SetNeedsDraw();
 
@@ -684,16 +684,6 @@ public sealed partial class AppShell : Window
         {
             FetchFullText(entry, quiet: true);
         }
-    }
-
-    private static string Ellipsize(string value, int max)
-    {
-        if (max <= 1 || string.IsNullOrEmpty(value))
-        {
-            return value ?? "";
-        }
-
-        return value.Length <= max ? value : value[..(max - 1)] + "…";
     }
 
     private void OpenSelected()

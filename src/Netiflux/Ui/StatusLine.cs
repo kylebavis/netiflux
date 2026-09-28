@@ -85,7 +85,7 @@ public sealed class StatusLine : View
         SetAttribute(scheme.Normal);
 
         var text = showingToast ? _toast : _legend;
-        var line = text.Length >= width ? text[..width] : text.PadRight(width);
+        var line = TextFit.Fit(text, width);
 
         Move(0, 0);
         AddStr(line);

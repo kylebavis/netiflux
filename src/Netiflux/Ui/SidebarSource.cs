@@ -73,7 +73,7 @@ public sealed record SidebarItem(SidebarKind Kind, string Label, int? Count = nu
 public sealed class SidebarSource : IListDataSource
 {
     private readonly List<SidebarItem> _items = [];
-    private GlyphSet _glyphs;
+    private readonly GlyphSet _glyphs;
     private int _lastRenderWidth = 24;
 
     public SidebarSource(GlyphSet glyphs)
@@ -89,12 +89,6 @@ public sealed class SidebarSource : IListDataSource
     public int MaxItemLength => _lastRenderWidth;
 
     public bool SuspendCollectionChangedEvent { get; set; }
-
-    public GlyphSet Glyphs
-    {
-        get => _glyphs;
-        set => _glyphs = value;
-    }
 
     public SidebarItem? this[int index] =>
         index >= 0 && index < _items.Count ? _items[index] : null;
@@ -235,7 +229,7 @@ public sealed class SidebarSource : IListDataSource
     public IList ToList() => _items;
 
     /// <summary>Nothing unmanaged here; the interface requires it.</summary>
-    public void Dispose() => GC.SuppressFinalize(this);
+    public void Dispose() { }
 
     public bool RenderMark(ListView listView, int item, int row, bool isMarked, bool markMultiple) => false;
 
@@ -271,7 +265,7 @@ public sealed class SidebarSource : IListDataSource
             {
                 Background = scheme.Normal.Background
             });
-            listView.AddStr(Fit(" " + entry.Label, width));
+            listView.AddStr(TextFit.Fit(" " + entry.Label, width));
             return;
         }
 
@@ -283,7 +277,7 @@ public sealed class SidebarSource : IListDataSource
                 ? scheme.Focus
                 : ThemeCatalog.Resolve("Accent").Normal with { Background = scheme.Normal.Background });
 
-            listView.AddStr(Fit($"  {entry.Label}", width));
+            listView.AddStr(TextFit.Fit($"  {entry.Label}", width));
             return;
         }
 
@@ -293,13 +287,8 @@ public sealed class SidebarSource : IListDataSource
         var count = entry.Count is { } n ? n.ToString(CultureInfo.InvariantCulture) : "";
         var marker = selected ? _glyphs.Selected : " ";
         var labelWidth = Math.Max(1, width - count.Length - 3);
-        var label = entry.Label.Length > labelWidth
-            ? entry.Label[..Math.Max(1, labelWidth - 1)] + "…"
-            : entry.Label.PadRight(labelWidth);
+        var label = TextFit.Truncate(entry.Label, labelWidth).PadRight(labelWidth);
 
-        listView.AddStr(Fit($"{marker} {label} {count}", width));
+        listView.AddStr(TextFit.Fit($"{marker} {label} {count}", width));
     }
-
-    private static string Fit(string value, int width) =>
-        value.Length >= width ? value[..width] : value.PadRight(width);
 }

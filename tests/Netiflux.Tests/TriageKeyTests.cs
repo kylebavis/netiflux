@@ -1,15 +1,17 @@
 using Netiflux.Core;
 using Netiflux.Core.Configuration;
 using Netiflux.Core.Models;
+using Netiflux.Ui;
 using Terminal.Gui.Input;
 
-namespace Netiflux.Ui.Tests;
+namespace Netiflux.Tests;
 
 /// <summary>
 /// The triage key map, exercised against a running shell. These are the bindings whose
 /// breakage is invisible to a unit test: every bug found in this area so far was a focus
 /// or routing problem, not a logic problem.
 /// </summary>
+[Trait("Category", "Ui")]
 [Collection(nameof(UiTestCollection))]
 public class TriageKeyTests
 {

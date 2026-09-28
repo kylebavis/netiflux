@@ -55,14 +55,12 @@ public static partial class ArticleRenderer
     /// Renders the full reading view: a metadata header followed by the article body.
     /// </summary>
     /// <param name="entry">The entry supplying the title, byline and default body.</param>
-    /// <param name="options">Rendering options; defaults are used when null.</param>
     /// <param name="contentOverride">
     /// HTML to render instead of <see cref="Entry.Content"/>, used after a full-text fetch.
     /// </param>
-    public static string Render(Entry entry, ArticleRenderOptions? options = null, string? contentOverride = null)
+    public static string Render(Entry entry, string? contentOverride = null)
     {
         ArgumentNullException.ThrowIfNull(entry);
-        options ??= ArticleRenderOptions.Default;
 
         var sb = new StringBuilder();
         sb.Append("# ").AppendLine(EscapeHeading(entry.Title));
@@ -78,7 +76,7 @@ public static partial class ArticleRenderer
 
         sb.AppendLine("---");
         sb.AppendLine();
-        sb.AppendLine(RenderBody(contentOverride ?? entry.Content, options));
+        sb.AppendLine(RenderBody(contentOverride ?? entry.Content));
 
         if (entry.Enclosures is { Count: > 0 })
         {
@@ -98,10 +96,8 @@ public static partial class ArticleRenderer
     }
 
     /// <summary>Converts an HTML fragment to Markdown, without the metadata header.</summary>
-    public static string RenderBody(string? html, ArticleRenderOptions? options = null)
+    public static string RenderBody(string? html)
     {
-        options ??= ArticleRenderOptions.Default;
-
         if (string.IsNullOrWhiteSpace(html))
         {
             return "*This entry has no content. Press `v` to open the original in a browser.*";
@@ -120,10 +116,7 @@ public static partial class ArticleRenderer
 
         markdown = WebUtility.HtmlDecode(markdown);
 
-        if (!options.ShowImages)
-        {
-            markdown = ReplaceImages(markdown);
-        }
+        markdown = ReplaceImages(markdown);
 
         markdown = WhitespaceOnlyLines.Replace(markdown, "");
         markdown = ExcessBlankLines.Replace(markdown, "\n\n");
@@ -219,12 +212,4 @@ public static partial class ArticleRenderer
                || text.TrimEnd().EndsWith('…')
                || text.TrimEnd().EndsWith("[...]", StringComparison.Ordinal);
     }
-}
-
-public sealed record ArticleRenderOptions
-{
-    public static readonly ArticleRenderOptions Default = new();
-
-    /// <summary>Keep image links in the output. Terminals mostly cannot show them, so alt text wins.</summary>
-    public bool ShowImages { get; init; }
 }

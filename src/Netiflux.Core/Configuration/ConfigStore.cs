@@ -27,38 +27,14 @@ public static class ConfigStore
     /// <summary>
     /// Directory holding config and local state. Honours <c>NETIFLUX_CONFIG_DIR</c>, then
     /// the platform convention: <c>%APPDATA%\netiflux</c> on Windows, <c>$XDG_CONFIG_HOME/netiflux</c>
-    /// (or <c>~/.config/netiflux</c>) elsewhere.
+    /// (or <c>~/.config/netiflux</c>) elsewhere, both via <see cref="Environment.SpecialFolder.ApplicationData"/>.
     /// </summary>
-    public static string ConfigDirectory
-    {
-        get
-        {
-            var overridden = Environment.GetEnvironmentVariable("NETIFLUX_CONFIG_DIR");
-            if (!string.IsNullOrWhiteSpace(overridden))
-            {
-                return overridden;
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                return Path.Combine(appData, "netiflux");
-            }
-
-            var xdg = Environment.GetEnvironmentVariable("XDG_CONFIG_HOME");
-            if (!string.IsNullOrWhiteSpace(xdg))
-            {
-                return Path.Combine(xdg, "netiflux");
-            }
-
-            var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            return Path.Combine(home, ".config", "netiflux");
-        }
-    }
+    public static string ConfigDirectory =>
+        Environment.GetEnvironmentVariable("NETIFLUX_CONFIG_DIR") is { Length: > 0 } overridden
+            ? overridden
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "netiflux");
 
     public static string ConfigFilePath => Path.Combine(ConfigDirectory, "config.json");
-
-    public static bool Exists => File.Exists(ConfigFilePath);
 
     public static NetifluxConfig Load()
     {
@@ -71,14 +47,14 @@ public static class ConfigStore
     {
         if (!File.Exists(ConfigFilePath))
         {
-            return NetifluxConfig.CreateDefault();
+            return new NetifluxConfig();
         }
 
         try
         {
             var json = File.ReadAllText(ConfigFilePath);
             return JsonSerializer.Deserialize<NetifluxConfig>(json, ReadOptions)
-                   ?? NetifluxConfig.CreateDefault();
+                   ?? new NetifluxConfig();
         }
         catch (Exception ex) when (ex is IOException or JsonException or UnauthorizedAccessException)
         {

@@ -1,9 +1,9 @@
 using Netiflux.Core;
 using Netiflux.Core.Models;
 
-namespace Netiflux.Core.Tests;
+namespace Netiflux.Tests;
 
-/// <summary>In-memory stand-in for the API, so session behaviour can be tested without a server.</summary>
+/// <summary>In-memory Miniflux, recording what the app asked it to do.</summary>
 public sealed class FakeMinifluxClient : IMinifluxClient
 {
     public List<Entry> Entries { get; init; } = [];
@@ -12,41 +12,61 @@ public sealed class FakeMinifluxClient : IMinifluxClient
 
     public List<Feed> Feeds { get; init; } = [];
 
-    /// <summary>Set to make the next mutating call throw, exercising rollback paths.</summary>
+    /// <summary>Unread-per-feed counts returned by <c>GetFeedCountersAsync</c>.</summary>
+    public Dictionary<long, int> FeedUnread { get; init; } = [];
+
+    public List<long> Saved { get; } = [];
+
+    public List<long> Bookmarked { get; } = [];
+
+    public List<(IReadOnlyList<long> Ids, EntryStatus Status)> StatusUpdates { get; } = [];
+
+    public int RefreshCount { get; private set; }
+
+    private int _entryRequests;
+
+    /// <summary>How many times the entry list has been loaded from the server.</summary>
+    public int EntryRequestCount => Volatile.Read(ref _entryRequests);
+
+    /// <summary>Armed to make the next call fail, for rollback tests.</summary>
     public Exception? NextFailure { get; set; }
-
-    public List<string> Calls { get; } = [];
-
-    public List<long> SavedEntryIds { get; } = [];
-
-    public string FullTextResult { get; set; } = "<p>full text</p>";
 
     public Task<MinifluxUser> GetMeAsync(CancellationToken ct = default) =>
         Task.FromResult(new MinifluxUser { Id = 1, Username = "tester" });
 
     public Task<EntryPage> GetEntriesAsync(EntryQuery query, CancellationToken ct = default)
     {
-        Calls.Add($"GetEntries(offset={query.Offset},limit={query.Limit})");
+        // The single-row starred query is how the session reads a count, not a list load.
+        if (!(query.Starred == true && query.Limit == 1))
+        {
+            Interlocked.Increment(ref _entryRequests);
+        }
+
         ThrowIfArmed();
 
-        IEnumerable<Entry> matching = Entries;
+        IEnumerable<Entry> match = Entries;
 
         if (query.Statuses.Count > 0)
         {
-            matching = matching.Where(e => query.Statuses.Contains(e.Status));
+            match = match.Where(e => query.Statuses.Contains(e.Status));
         }
 
         if (query.Starred is { } starred)
         {
-            matching = matching.Where(e => e.Starred == starred);
+            match = match.Where(e => e.Starred == starred);
         }
 
         if (query.FeedId is { } feedId)
         {
-            matching = matching.Where(e => e.FeedId == feedId);
+            match = match.Where(e => e.FeedId == feedId);
         }
 
-        var all = matching.ToList();
+        if (!string.IsNullOrWhiteSpace(query.Search))
+        {
+            match = match.Where(e => e.Title.Contains(query.Search, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var all = match.ToList();
 
         return Task.FromResult(new EntryPage
         {
@@ -55,21 +75,14 @@ public sealed class FakeMinifluxClient : IMinifluxClient
         });
     }
 
-    public Task<Entry> GetEntryAsync(long entryId, CancellationToken ct = default) =>
-        Task.FromResult(Entries.First(e => e.Id == entryId));
-
     public Task<IReadOnlyList<Feed>> GetFeedsAsync(CancellationToken ct = default) =>
         Task.FromResult<IReadOnlyList<Feed>>(Feeds);
 
     public Task<IReadOnlyList<Category>> GetCategoriesAsync(CancellationToken ct = default) =>
         Task.FromResult<IReadOnlyList<Category>>(Categories);
 
-    /// <summary>Unread-per-feed counts returned by <c>GetFeedCountersAsync</c>.</summary>
-    public Dictionary<long, int> FeedUnread { get; init; } = [];
-
     public Task<FeedCounters> GetFeedCountersAsync(CancellationToken ct = default)
     {
-        Calls.Add("GetFeedCounters");
         ThrowIfArmed();
         return Task.FromResult(new FeedCounters { Unreads = FeedUnread });
     }
@@ -79,37 +92,35 @@ public sealed class FakeMinifluxClient : IMinifluxClient
         EntryStatus status,
         CancellationToken ct = default)
     {
-        Calls.Add($"UpdateStatus([{string.Join(",", entryIds)}],{status})");
         ThrowIfArmed();
+        StatusUpdates.Add((entryIds, status));
         return Task.CompletedTask;
     }
 
     public Task ToggleBookmarkAsync(long entryId, CancellationToken ct = default)
     {
-        Calls.Add($"ToggleBookmark({entryId})");
         ThrowIfArmed();
+        Bookmarked.Add(entryId);
         return Task.CompletedTask;
     }
 
     public Task SaveToThirdPartyAsync(long entryId, CancellationToken ct = default)
     {
-        Calls.Add($"Save({entryId})");
         ThrowIfArmed();
-        SavedEntryIds.Add(entryId);
+        Saved.Add(entryId);
         return Task.CompletedTask;
     }
 
     public Task<string> FetchOriginalContentAsync(long entryId, CancellationToken ct = default)
     {
-        Calls.Add($"FetchContent({entryId})");
         ThrowIfArmed();
-        return Task.FromResult(FullTextResult);
+        return Task.FromResult("<p>Full scraped text.</p>");
     }
 
     public Task RefreshAllFeedsAsync(CancellationToken ct = default)
     {
-        Calls.Add("RefreshAll");
         ThrowIfArmed();
+        RefreshCount++;
         return Task.CompletedTask;
     }
 

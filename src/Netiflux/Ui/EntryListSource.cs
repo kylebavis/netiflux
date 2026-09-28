@@ -23,7 +23,7 @@ public sealed class EntryListSource : IListDataSource
     private readonly List<Entry> _entries = [];
     private readonly HashSet<int> _marked = [];
     private readonly SavedEntryStore _savedStore;
-    private GlyphSet _glyphs;
+    private readonly GlyphSet _glyphs;
     private int _lastRenderWidth = 80;
 
     public EntryListSource(SavedEntryStore savedStore, GlyphSet glyphs)
@@ -42,12 +42,6 @@ public sealed class EntryListSource : IListDataSource
     public bool SuspendCollectionChangedEvent { get; set; }
 
     public IReadOnlyList<Entry> Entries => _entries;
-
-    public GlyphSet Glyphs
-    {
-        get => _glyphs;
-        set => _glyphs = value;
-    }
 
     public Entry? this[int index] =>
         index >= 0 && index < _entries.Count ? _entries[index] : null;
@@ -126,7 +120,7 @@ public sealed class EntryListSource : IListDataSource
     public IList ToList() => _entries;
 
     /// <summary>Nothing unmanaged here; the interface requires it.</summary>
-    public void Dispose() => GC.SuppressFinalize(this);
+    public void Dispose() { }
 
     /// <summary>The mark column is drawn as part of <see cref="Render"/>, not separately.</summary>
     public bool RenderMark(ListView listView, int item, int row, bool isMarked, bool markMultiple) => false;
@@ -212,17 +206,17 @@ public sealed class EntryListSource : IListDataSource
 
         var age = FormatAge(entry.PublishedAt).PadLeft(AgeColumnWidth);
         var feedWidth = width >= 70 ? FeedColumnWidth : 0;
-        var feed = feedWidth > 0 ? Truncate(entry.FeedTitle, feedWidth - 1).PadRight(feedWidth) : "";
+        var feed = feedWidth > 0 ? TextFit.Truncate(entry.FeedTitle, feedWidth - 1).PadRight(feedWidth) : "";
 
         var titleWidth = width - prefix.Length - feed.Length - age.Length - 1;
         if (titleWidth < 8)
         {
             // Very narrow pane: title only.
             metaStartIndex = -1;
-            return Truncate(prefix + Sanitize(entry.Title), width);
+            return TextFit.Truncate(prefix + Sanitize(entry.Title), width);
         }
 
-        var title = Truncate(Sanitize(entry.Title), titleWidth).PadRight(titleWidth);
+        var title = TextFit.Truncate(Sanitize(entry.Title), titleWidth).PadRight(titleWidth);
         metaStartIndex = prefix.Length + title.Length;
 
         return prefix + title + " " + feed + age;
@@ -236,29 +230,7 @@ public sealed class EntryListSource : IListDataSource
             return "(untitled)";
         }
 
-        Span<char> buffer = value.Length <= 256 ? stackalloc char[value.Length] : new char[value.Length];
-        for (var i = 0; i < value.Length; i++)
-        {
-            var c = value[i];
-            buffer[i] = char.IsControl(c) ? ' ' : c;
-        }
-
-        return new string(buffer).Trim();
-    }
-
-    private static string Truncate(string value, int max)
-    {
-        if (max <= 0)
-        {
-            return "";
-        }
-
-        if (value.Length <= max)
-        {
-            return value;
-        }
-
-        return max <= 1 ? value[..max] : value[..(max - 1)] + "…";
+        return new string(value.Select(c => char.IsControl(c) ? ' ' : c).ToArray()).Trim();
     }
 
     /// <summary>Compact relative age: 45m, 6h, 3d, 2w, 5mo.</summary>
