@@ -8,10 +8,6 @@ A terminal client for [Miniflux](https://miniflux.app), built on .NET 10 and
 [Terminal.Gui v2](https://github.com/gui-cs/Terminal.Gui). Cross-platform, developed and
 tested primarily on Windows.
 
-It is built around one workflow: **go through the unread list, read or skim what is
-short, and push anything worth revisiting to your bookmark manager** via Miniflux's
-"save to third-party service" integration.
-
 ```
  Netiflux  ·  Unread  ·  16 unread  ·  12 starred
 ┌ Feeds ────────────┬ Unread (16) ───────────────┬ Designing for the terminal ──────┐
@@ -54,7 +50,7 @@ dotnet build
 
 You will need a Miniflux instance and an API token (Miniflux → Settings → API Keys).
 
-Create the config file — `netiflux --where` prints its exact location
+Create the config file — `netiflux --where` prints its location
 (`%APPDATA%\netiflux\config.json` on Windows, `~/.config/netiflux/config.json` elsewhere):
 
 ```json
@@ -84,12 +80,11 @@ Three options, in order of precedence:
 2. **`api_token`** in the config file — simplest, but the token sits in plain text. The
    file is written `chmod 600` on Unix; on Windows it inherits your user-profile ACL.
 3. **`api_token_command`** — any shell command whose stdout is the token, e.g.
-   `op read …`, `pass show miniflux`, `gpg -d ~/.miniflux.gpg`. The token never touches
-   disk in plain text. This is the recommended option.
+   `op read …`, `pass show miniflux`, `gpg -d ~/.miniflux.gpg`. This is the most secure option.
 
 ## Keys
 
-Bindings follow Miniflux's own web shortcuts, so what you already know carries over.
+Bindings follow Miniflux's own web shortcuts.
 
 ### Moving
 
@@ -114,8 +109,7 @@ Bindings follow Miniflux's own web shortcuts, so what you already know carries o
 | `A` | Mark everything in this view read (asks first) |
 
 Actions apply to the marked rows if there are any, otherwise to the row under the
-cursor. Nothing needs to be opened first: `s` on a highlighted row saves it, and
-`Space Space Space s` pushes three articles at once.
+cursor.
 
 ### Views and display
 
@@ -144,59 +138,6 @@ cursor. Nothing needs to be opened first: `s` on a highlighted row saves it, and
 
 On legacy Windows consoles that cannot render these, Netiflux automatically falls back
 to `* - + v # >`.
-
-## Design notes
-
-A few decisions worth knowing about, because they are not obvious from the outside.
-
-**Saved state is tracked locally.** The Miniflux API has no "was this entry saved?"
-field — `POST /v1/entries/{id}/save` is fire-and-forget and returns `202 Accepted`.
-Without a local record there would be no way to show a saved marker, and during triage
-you could not tell an article you already pushed from one you skipped. Netiflux keeps
-its own log in `saved-entries.json` next to the config. Delete that file to reset it,
-or set `"track_saved_locally": false` to turn the marker off.
-
-**Most actions are optimistic, but saving is not.** Marking read and starring update the
-screen immediately and reconcile with the server afterwards, rolling back and reporting
-if the call fails — triage is a rhythm, and waiting on a round-trip breaks it. Saving
-waits for the server to accept before showing the marker, because a save you believe
-happened and did not is the one error here with lasting consequences.
-
-**The sidebar shows what needs attention, not everything.** A large subscription list is
-mostly quiet at any given moment — scrolling hundreds of silent feeds to reach the few
-with new items is the opposite of triage. So the rail lists only feeds with unread
-entries (ordered by count), plus any that are failing to parse, and hides the rest
-behind a `show N more…` row that `Enter` expands. Per-feed counts come from
-`/v1/feeds/counters`, since feed objects themselves carry none. The CATEGORIES section
-appears only when there are at least two categories; a single one just duplicates
-"Unread".
-
-Broken feeds are always listed, marked with a trailing `!`, because a feed that has
-stopped working looks exactly like one that simply has no news.
-
-**Search is a bar, not a dialog, and it is undoable.** `/` opens a prompt at the bottom
-of the window where the query is visible as it is typed — a modal dialog obscured the
-one thing you needed to see. Running a search remembers the view you came from, and
-`Esc` puts it back; search is a detour, not a destination you have to navigate out of by
-hand. `Esc` generally unwinds one layer at a time: a marked selection first, then the
-reader, then search.
-
-**Images become their alt text.** Terminals cannot show pictures, and a Substack hero
-image left as Markdown is several hundred characters of CDN URL dropped into the middle
-of an article. Images render as `[image]`, or `[image: caption]` when the alt text says
-something useful.
-
-**The layout is responsive.** Below 100 columns the three panes stop being readable, so
-the list and reader take turns instead: opening an entry switches to the reader and
-`Esc` comes back. Above that width it is a normal split view.
-
-**Highlighting an entry marks it read.** `auto_mark_read` defaults to `on-select`:
-moving the cursor onto an entry is itself the act of reading it during triage, so
-holding `j` clears the list as you go. Two details make that safe rather than annoying —
-the mark waits for the cursor to *settle* (120 ms), so scrolling through to reach the
-bottom does not clear everything on the way; and the initial cursor position after a
-list loads is never marked, so opening the app does not consume the top article. Set
-`on-open`, `on-scroll-end`, or `never` if you want the older behaviour.
 
 ## Theming
 
@@ -231,8 +172,8 @@ a bundled one of the same name, so the easiest start is to copy a block out of
 
 Netiflux-specific scheme names are `Sidebar`, `EntryUnread`, `EntryRead`, `EntrySaved`,
 `Reader`, `ReaderMeta`, `Banner`, `StatusGood`, and `StatusBad`, alongside Terminal.Gui's
-standard `Base`, `Accent`, `Dialog`, `Menu`, and `Error`. Anything you leave out falls
-back to `Base`, so a partial theme still works.
+standard `Base`, `Accent`, `Dialog`, `Menu`, and `Error`. Anything omitted falls
+back to `Base`.
 
 ## Configuration reference
 
@@ -261,15 +202,10 @@ tests/Netiflux.Tests    unit tests, plus end-to-end UI tests (Category=Ui)
 dotnet test
 ```
 
-The `Category=Ui` tests start an actual `AppShell` on an actual Terminal.Gui main loop and
-press keys at it, because the bugs that matter in a TUI are focus and key-routing bugs
-that method-level tests cannot see. Modal dialogs are the one gap — see
-[the notes there](tests/Netiflux.Tests/README.md) for why, and what would fix it.
-
 ## Releasing
 
-Versioning is [semver](https://semver.org), driven entirely by git tags. Pushing a tag
-builds, tests and publishes; nothing else does.
+Versioning is [semver](https://semver.org), driven by git tags. Pushing a tag
+builds, tests and publishes.
 
 ```bash
 git tag -a v0.2.0 -m "v0.2.0"
@@ -278,23 +214,17 @@ git push origin v0.2.0
 
 That runs [`release.yml`](.github/workflows/release.yml), which:
 
-1. validates the tag is a real semantic version and fails fast if not;
-2. runs the full test suite on Windows — a red build blocks the release;
+1. validates the tag is a real semantic version;
+2. runs the full test suite on Windows;
 3. publishes self-contained single-file binaries for six platforms;
 4. creates the GitHub release with archives, a combined `SHA256SUMS.txt`, and
    auto-generated notes.
 
 A tag with a pre-release suffix (`v0.2.0-rc.1`) is marked as a pre-release on GitHub
-rather than becoming "Latest". The version is injected into the build, so
-`netiflux --version` on a downloaded binary reports exactly the tag it came from.
+rather than becoming "Latest". The version is injected into the build to facilitate
+`netiflux --version`.
 
 `workflow_dispatch` builds artifacts for a given version without publishing anything,
 which is useful for checking a release before tagging.
 
 Update [`CHANGELOG.md`](CHANGELOG.md) before tagging.
-
-### Dependencies
-
-[Dependabot](.github/dependabot.yml) opens weekly PRs for NuGet packages and workflow
-actions. Terminal.Gui is grouped on its own deliberately: its config API changes between
-minor releases and the app works around some of its quirks, so updates want a real look.
