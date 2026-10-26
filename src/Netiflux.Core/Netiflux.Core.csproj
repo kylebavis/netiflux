@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="ReverseMarkdown" Version="6.2.1" />
+    <PackageReference Include="ReverseMarkdown" Version="6.3.0" />
   </ItemGroup>
 
 </Project>
