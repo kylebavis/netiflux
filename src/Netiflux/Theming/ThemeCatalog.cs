@@ -25,7 +25,7 @@ public static class ThemeCatalog
     /// <summary>Theme applied when the configured one is missing or unparseable.</summary>
     public const string FallbackTheme = "Netiflux Dark";
 
-    private static readonly Dictionary<string, Scheme> SchemeCache = new(StringComparer.Ordinal);
+    private static readonly Dictionary<string, Scheme> SchemeCache = [with(StringComparer.Ordinal)];
     private static bool _enabled;
 
     /// <summary>File the user can create to add or override themes.</summary>
@@ -135,7 +135,7 @@ public static class ThemeCatalog
     /// </summary>
     private static string BuildMergedConfig(List<string> warnings)
     {
-        var themesByName = new Dictionary<string, JsonNode?>(StringComparer.Ordinal);
+        Dictionary<string, JsonNode?> themesByName = [with(StringComparer.Ordinal)];
         var order = new List<string>();
 
         foreach (var (name, node) in ReadThemes(LoadBundledJson(), "bundled themes", warnings))

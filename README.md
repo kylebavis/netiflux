@@ -4,7 +4,7 @@
 [![Release](https://img.shields.io/github/v/release/kylebavis/netiflux?sort=semver)](https://github.com/kylebavis/netiflux/releases/latest)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A terminal client for [Miniflux](https://miniflux.app), built on .NET 10 and
+A terminal client for [Miniflux](https://miniflux.app), built on .NET 11 and
 [Terminal.Gui v2](https://github.com/gui-cs/Terminal.Gui). Cross-platform, developed and
 tested primarily on Windows.
 
@@ -40,7 +40,7 @@ chmod +x netiflux
 
 Verify a download against the `SHA256SUMS.txt` published with the release.
 
-To build from source instead you need the .NET 10 SDK:
+To build from source instead you need the .NET 11 SDK:
 
 ```bash
 dotnet build

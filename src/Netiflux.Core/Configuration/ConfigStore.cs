@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -171,24 +172,27 @@ public static class ConfigStore
         startInfo.ArgumentList.Add(isWindows ? "/c" : "-c");
         startInfo.ArgumentList.Add(command);
 
-        using var process = Process.Start(startInfo)
-                            ?? throw new InvalidOperationException("Could not start the token command.");
-
-        var stdoutTask = process.StandardOutput.ReadToEndAsync(ct);
-        var stderrTask = process.StandardError.ReadToEndAsync(ct);
-
-        await process.WaitForExitAsync(ct).ConfigureAwait(false);
-
-        var stdout = await stdoutTask.ConfigureAwait(false);
-        var stderr = await stderrTask.ConfigureAwait(false);
-
-        if (process.ExitCode != 0)
+        ProcessTextOutput output;
+        try
         {
-            var reason = string.IsNullOrWhiteSpace(stderr) ? $"exit code {process.ExitCode}" : stderr.Trim();
+            // Kills the process if ct fires.
+            output = await Process.RunAndCaptureTextAsync(startInfo, ct).ConfigureAwait(false);
+        }
+        catch (Win32Exception ex)
+        {
+            throw new InvalidOperationException($"Could not start the token command: {ex.Message}", ex);
+        }
+
+        ct.ThrowIfCancellationRequested();
+
+        var exitCode = output.ExitStatus.ExitCode;
+        if (exitCode != 0)
+        {
+            var reason = string.IsNullOrWhiteSpace(output.StandardError) ? $"exit code {exitCode}" : output.StandardError.Trim();
             throw new InvalidOperationException($"Token command failed: {reason}");
         }
 
-        var token = stdout.Trim();
+        var token = output.StandardOutput.Trim();
         if (string.IsNullOrEmpty(token))
         {
             throw new InvalidOperationException("Token command produced no output.");
