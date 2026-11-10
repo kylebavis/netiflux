@@ -9,6 +9,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Retargeted to .NET 11. Release builds now need an x86-64-v2 CPU (or Arm64 with LSE on Windows).
+- `api_token_command` runs via `Process.RunAndCaptureTextAsync`; cancelling now kills the command.
 - Terminal.Gui 2.5.0. Theme loading moved off the removed `ConfigurationManager` API; existing `themes.json` files keep working.
 
 ### Removed
